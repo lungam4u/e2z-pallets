@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E2Z Pallets - Your Premier Pallet Solutions Partner</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- 
+        Chosen Palette: Professional Tech
+        - Primary Accent: Deep Blue (#0B3D91) - for professionalism, trust, stability
+        - Secondary Accent: Gray (#8F9393) - for modern, tech-forward feel
+        - Background: bg-gray-50 (#F9FAFB)
+        - Primary Text: text-gray-800 (#1F2937)
+        - Borders & Dividers: border-gray-200 (#E5E7EB)
+    -->
+    <!-- 
+        Application Structure Plan:
+        The application is structured as a single-page, top-down narrative designed for a potential business customer. The flow is logical:
+        1.  Hero Section: Immediately grabs attention with the core value proposition.
+        2.  Why Choose Us: Quickly builds trust and highlights key differentiators.
+        3.  Our Solutions: Provides a clear, categorized overview of products and services.
+        4.  Interactive Pricing: The core interactive element, allowing users to actively switch between sales and rental pricing, engaging them directly with the data. This is more effective than a static table as it simplifies comparison.
+        5.  Pallet Recommendation Tool: A new interactive section powered by Gemini API, allowing users to get tailored pallet suggestions based on their input. This adds direct utility and engagement.
+        6.  Market Insights (Chart): A visual representation of cost-effectiveness, reinforcing the value proposition.
+        7.  Contact/CTA: A clear final call to action.
+        This structure guides the user from a high-level introduction to detailed, interactive information, making the content easily digestible and encouraging engagement.
+    -->
+    <!-- 
+        Visualization & Content Choices:
+        - **Pricing Table (HTML Table + JS)**: A table is the clearest way to present structured price data. Making it dynamic (switching between Sales and Rentals) with JavaScript buttons prevents overwhelming the user with too much information at once. This directly addresses the goal of comparing options.
+        - **Value-Added Services (Interactive Cards)**: Using clickable cards for these services keeps the main layout clean. The "click to reveal more" interaction encourages user engagement and allows them to explore only what's relevant to them, improving usability.
+        - **Cost Comparison Chart (Chart.js Bar Chart)**: A bar chart is chosen to visually and simply compare the cost of 'New' vs. 'Used' pallets, a key selling point. This provides a quick, powerful data visualization that supports the "Cost-Effectiveness" message.
+        - **Pallet Icons (Font Awesome)**: Used to visually represent different service categories (e.g., pallet sales, rentals, management, custom crating, packing, timber supply) to enhance visual appeal and quick understanding of the section's content.
+        - **Pallet Recommendation Tool (Text Input + LLM API Call)**: This is a new interactive feature. Text inputs capture user needs, and a JavaScript fetch call to the Gemini API (`gemini-2.0-flash`) processes this input to generate a personalized pallet recommendation. The output is dynamic text, directly addressing user queries for tailored solutions.
+        - **Company Logos (Image)**: The provided logos (`E2Z PALLETS logo.png` and `E2Z PALLETS Logo white.png`) are integrated into the header, hero section, and footer to enhance branding and visual identity. The appropriate logo color variant is chosen based on the background color of the section.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 100%;
+            max-width: 700px;
+            margin: auto;
+            max-height: 400px;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-800">
+
+    <!-- Header & Navigation -->
+    <header class="bg-white shadow-md sticky top-0 z-50">
+        <nav class="container mx-auto px-6 py-3 flex justify-between items-center">
+            <a href="#" class="font-bold text-gray-800">
+                <img src="E2Z PALLETS logo.png" alt="E2Z Pallets Logo" class="h-8 md:h-10">
+            </a>
+            <div class="hidden md:flex space-x-6">
+                <a href="#about" class="text-gray-600 hover:text-[#0B3D91] transition-colors">About Us</a>
+                <a href="#solutions" class="text-gray-600 hover:text-[#0B3D91] transition-colors">Our Solutions</a>
+                <a href="#pricing" class="text-gray-600 hover:text-[#0B3D91] transition-colors">Pricing</a>
+                <a href="#recommendation" class="text-gray-600 hover:text-[#0B3D91] transition-colors">Get a Recommendation</a>
+                <a href="#contact" class="bg-[#0B3D91] text-white py-2 px-4 rounded-md hover:bg-blue-800 transition-colors">Get a Quote</a>
+            </div>
+            <button id="mobile-menu-button" class="md:hidden focus:outline-none">
+                <i class="fas fa-bars text-2xl"></i>
+            </button>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white">
+            <a href="#about" class="block py-2 px-4 text-sm hover:bg-gray-200">About Us</a>
+            <a href="#solutions" class="block py-2 px-4 text-sm hover:bg-gray-200">Our Solutions</a>
+            <a href="#pricing" class="block py-2 px-4 text-sm hover:bg-gray-200">Pricing</a>
+            <a href="#recommendation" class="block py-2 px-4 text-sm hover:bg-gray-200">Get a Recommendation</a>
+            <a href="#contact" class="block py-2 px-4 text-sm hover:bg-gray-200">Get a Quote</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section id="home" class="bg-[#0B3D91] text-white py-20 md:py-32">
+            <div class="container mx-auto text-center px-6">
+                <img src="E2Z PALLETS Logo white.png" alt="E2Z Pallets Logo White" class="h-24 md:h-32 mx-auto mb-6">
+                <h1 class="text-4xl md:text-6xl font-extrabold leading-tight mb-4">Your Premier Pallet Solutions Partner</h1>
+                <p class="text-lg md:text-xl text-gray-300 mb-8 max-w-3xl mx-auto">Connecting your business with high-quality, reliable, and cost-effective pallets. We offer comprehensive sales, rental, and management services tailored to your needs.</p>
+                <a href="#pricing" class="bg-white text-[#0B3D91] font-bold py-3 px-8 rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105 inline-block">Explore Pricing</a>
+            </div>
+        </section>
+
+        <!-- About Us / The E2Z Advantage Section -->
+        <section id="about" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">The E2Z Advantage</h2>
+                <div class="grid md:grid-cols-3 gap-8 text-center">
+                    <div class="p-6">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-handshake fa-3x"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">Comprehensive Solutions</h3>
+                        <p class="text-gray-600">A single point of contact for all your pallet needs, from sales and rentals to custom crating and repairs.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-dollar-sign fa-3x"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">Cost-Effective & Flexible</h3>
+                        <p class="text-gray-600">Competitive pricing through our wide supplier network, with flexible purchase and rental options to fit any budget.</p>
+                    </div>
+                    <div class="p-6">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-leaf fa-3x"></i></div>
+                        <h3 class="text-xl font-semibold mb-2">Sustainability at Core</h3>
+                        <p class="text-gray-600">We promote the reuse, repair, and recycling of pallets, helping you meet your environmental responsibility goals.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Our Solutions Section -->
+        <section id="solutions" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-12">Our Comprehensive Pallet Solutions</h2>
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-pallet fa-3x"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Pallet Sales</h3>
+                        <p class="text-gray-600">New and high-grade used wooden and plastic pallets, including standard, heavy-duty, and ISPM 15 certified options for export.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-boxes-stacked fa-3x"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Pallet Rentals & Pooling</h3>
+                        <p class="text-gray-600">Flexible short and long-term rentals for A-Grade and hybrid pallets. We also facilitate pallet pooling systems for ultimate supply chain efficiency.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-wrench fa-3x"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Pallet Management</h3>
+                        <p class="text-gray-600">Extend the life of your assets with our professional on-site or off-site pallet repair and up-cycling services.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-box-open fa-3x"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Custom Crating</h3>
+                        <p class="text-gray-600">Tailored wooden crates and boxes for secure local and international transport of valuable or fragile goods.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-truck-ramp-box fa-3x"></i></div>
+                        <h3 class="text-xl font-bold mb-2">On-Site Packing</h3>
+                        <p class="text-gray-600">Our expert team can professionally pack, wrap, and secure your items directly at your facility for safe transit.</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow">
+                        <div class="text-[#0B3D91] mb-4"><i class="fas fa-tree fa-3x"></i></div>
+                        <h3 class="text-xl font-bold mb-2">Timber Supply</h3>
+                        <p class="text-gray-600">Access to quality pine, saligna, and other timber for your own repair or custom building projects.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">Pricing & Options</h2>
+                <p class="text-center text-gray-600 mb-8">All prices are indicative and exclusive of VAT. Contact us for a precise quote.</p>
+                <div class="flex justify-center space-x-4 mb-8">
+                    <button id="salesBtn" class="bg-[#0B3D91] text-white font-bold py-2 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0B3D91]">Sales Pricing</button>
+                    <button id="rentalBtn" class="bg-gray-200 text-gray-700 font-bold py-2 px-6 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#0B3D91]">Rental Pricing</button>
+                </div>
+
+                <div class="overflow-x-auto">
+                    <table class="min-w-full bg-white border border-gray-200">
+                        <thead id="pricing-table-head">
+                            <!-- Header will be dynamically inserted here -->
+                        </thead>
+                        <tbody id="pricing-table-body">
+                            <!-- Rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-center text-gray-500 text-sm mt-4">*For rentals, a refundable deposit of 50% of the pallet's new value is required. Weekly/monthly rates offer significant savings. **Repair/Replacement costs are determined based on damage assessment.</p>
+            </div>
+        </section>
+
+        <!-- Pallet Recommendation Tool Section -->
+        <section id="recommendation" class="py-16 bg-gray-50">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">✨ Find Your Perfect Pallet Solution ✨</h2>
+                <p class="text-center text-gray-600 mb-8">Tell us about your needs, and our AI-powered assistant will suggest the best pallet type for you.</p>
+                
+                <div class="bg-white p-8 rounded-lg shadow-md max-w-2xl mx-auto">
+                    <div class="mb-4">
+                        <label for="shipping_goods" class="block text-gray-700 text-sm font-bold mb-2">What are you shipping? (e.g., heavy machinery, food products, general goods)</label>
+                        <textarea id="shipping_goods" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline h-24" placeholder="Describe the goods..."></textarea>
+                    </div>
+                    <div class="mb-4">
+                        <label for="approx_weight" class="block text-gray-700 text-sm font-bold mb-2">Approximate weight per pallet (kg):</label>
+                        <input type="number" id="approx_weight" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., 500">
+                    </div>
+                    <div class="mb-6">
+                        <label class="block text-gray-700 text-sm font-bold mb-2">Shipping Destination:</label>
+                        <div class="mt-2">
+                            <label class="inline-flex items-center">
+                                <input type="radio" class="form-radio text-[#0B3D91]" name="shipping_dest" value="local" checked>
+                                <span class="ml-2 text-gray-700">Local (South Africa)</span>
+                            </label>
+                            <label class="inline-flex items-center ml-6">
+                                <input type="radio" class="form-radio text-[#0B3D91]" name="shipping_dest" value="international">
+                                <span class="ml-2 text-gray-700">International</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="mb-6">
+                        <label for="special_requirements" class="block text-gray-700 text-sm font-bold mb-2">Any special requirements? (e.g., hygiene, reusability, rackable, one-way)</label>
+                        <input type="text" id="special_requirements" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" placeholder="e.g., Food-grade, stackable in racks">
+                    </div>
+                    
+                    <button id="getRecommendationBtn" class="bg-[#0B3D91] text-white font-bold py-3 px-6 rounded-full hover:bg-blue-800 transition-transform transform hover:scale-105 w-full">Get My Pallet Recommendation ✨</button>
+                    
+                    <div id="recommendationOutput" class="mt-8 p-4 bg-gray-100 rounded-lg border border-gray-200 hidden">
+                        <p class="text-gray-700 font-semibold mb-2">Your Recommended Pallet Solution:</p>
+                        <div id="recommendationText" class="text-gray-800 leading-relaxed"></div>
+                        <div id="recommendationLoading" class="hidden text-center text-[#0B3D91] mt-4">
+                            <i class="fas fa-spinner fa-spin text-2xl"></i>
+                            <p class="mt-2">Generating recommendation...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Chart Section -->
+        <section class="py-16 bg-white">
+            <div class="container mx-auto px-6">
+                <h2 class="text-3xl font-bold text-center mb-4">Cost-Effectiveness at a Glance</h2>
+                <p class="text-center text-gray-600 mb-8">Compare the upfront investment for different pallet types to make the best decision for your budget.</p>
+                <div class="chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer id="contact" class="bg-[#0B3D91] text-white py-12">
+        <div class="container mx-auto px-6 text-center">
+            <h2 class="text-3xl font-bold mb-4">Ready to Optimize Your Logistics?</h2>
+            <p class="mb-8 max-w-2xl mx-auto">Contact E2Z Pallets today for a personalized consultation and a competitive quote tailored to your unique business needs. Let's build a more efficient and sustainable supply chain together.</p>
+            <div class="flex flex-col md:flex-row justify-center items-center space-y-4 md:space-y-0 md:space-x-8">
+                <div class="flex items-center">
+                    <i class="fas fa-map-marker-alt mr-2 text-[#8F9393]"></i>
+                    <span>Southdowns, Irene, Centurion</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-phone-alt mr-2 text-[#8F9393]"></i>
+                    <span>063 166 8215</span>
+                </div>
+                <div class="flex items-center">
+                    <i class="fas fa-envelope mr-2 text-[#8F9393]"></i>
+                    <span>info@e2z.co.za</span>
+                </div>
+            </div>
+            <p class="mt-8 text-sm text-gray-400">&copy; 2024 E2Z Pallets. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            mobileMenuButton.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            // Pricing Data
+            const salesData = [
+                { type: 'New Wooden', size: '1000x1200', grade: 'A-Grade', purpose: 'Local/General Use', maxLoad: '1500-2000kg (Static)', price: 'R150 - R250' },
+                { type: 'Used Wooden', size: '1000x1200', grade: 'A-Grade', purpose: 'Local/General Use', maxLoad: '1000-1500kg (Static)', price: 'R80 - R150' },
+                { type: 'New Plastic', size: '120x100 cm', grade: 'Virgin', purpose: 'Local/Intl', maxLoad: '2000-5000kg (Static), 1000-1500kg (Dynamic)', price: 'R800 - R2800+' },
+                { type: 'Used Plastic', size: '120x100 cm', grade: 'Good', purpose: 'Local/Intl', maxLoad: '1500-4000kg (Static), 800-1200kg (Dynamic)', price: 'R140 - R1045' },
+                { type: 'Export (ISPM 15)', size: '1000x1200', grade: 'New', purpose: 'International', maxLoad: '1500-2000kg (Static)', price: 'R200 - R350' }
+            ];
+
+            const rentalData = [
+                { type: 'Used Wooden', size: '1000x1200', grade: 'A-Grade', purpose: 'Local/General Use', maxLoad: '1000-1500kg (Static)', price: 'R10 - R20 / day', repair: 'R40 - R75' },
+                { type: 'Used Plastic', size: '120x100 cm', grade: 'Good', purpose: 'Local/Intl', maxLoad: '1500-4000kg (Static), 800-1200kg (Dynamic)', price: 'R15 - R35 / day', repair: 'R70 - R520' },
+                { type: 'Hybrid', size: 'Standard', grade: 'A-Grade', purpose: 'Local/General Use', maxLoad: '2000-5000kg (Static), 1000-2000kg (Dynamic)', price: 'R18 - R30 / day', repair: 'R90 - R150' }
+            ];
+
+            const tableHead = document.getElementById('pricing-table-head');
+            const tableBody = document.getElementById('pricing-table-body');
+            const salesBtn = document.getElementById('salesBtn');
+            const rentalBtn = document.getElementById('rentalBtn');
+
+            function renderSalesTable() {
+                tableHead.innerHTML = `
+                    <tr class="bg-gray-100">
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Pallet Type & Condition</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Size (cm)</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Grade</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Purpose</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Max Load Capacity (Static/Dynamic kg)</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Selling Price (excl VAT)</th>
+                    </tr>
+                `;
+                tableBody.innerHTML = salesData.map(item => `
+                    <tr class="border-b border-gray-200">
+                        <td class="py-3 px-4">${item.type}</td>
+                        <td class="py-3 px-4">${item.size}</td>
+                        <td class="py-3 px-4">${item.grade}</td>
+                        <td class="py-3 px-4">${item.purpose}</td>
+                        <td class="py-3 px-4">${item.maxLoad}</td>
+                        <td class="py-3 px-4 font-medium">${item.price}</td>
+                    </tr>
+                `).join('');
+                salesBtn.classList.add('bg-[#0B3D91]', 'text-white');
+                salesBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                rentalBtn.classList.add('bg-gray-200', 'text-gray-700');
+                rentalBtn.classList.remove('bg-[#0B3D91]', 'text-white');
+            }
+
+            function renderRentalTable() {
+                tableHead.innerHTML = `
+                    <tr class="bg-gray-100">
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Pallet Type & Condition</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Size (cm)</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Grade</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Purpose</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Max Load Capacity (Static/Dynamic kg)</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Rental Price (excl VAT)</th>
+                        <th class="py-3 px-4 text-left font-semibold text-sm">Repair Cost (excl VAT)**</th>
+                    </tr>
+                `;
+                tableBody.innerHTML = rentalData.map(item => `
+                    <tr class="border-b border-gray-200">
+                        <td class="py-3 px-4">${item.type}</td>
+                        <td class="py-3 px-4">${item.size}</td>
+                        <td class="py-3 px-4">${item.grade}</td>
+                        <td class="py-3 px-4">${item.purpose}</td>
+                        <td class="py-3 px-4">${item.maxLoad}</td>
+                        <td class="py-3 px-4 font-medium">${item.price}</td>
+                        <td class="py-3 px-4">${item.repair}</td>
+                    </tr>
+                `).join('');
+                rentalBtn.classList.add('bg-[#0B3D91]', 'text-white');
+                rentalBtn.classList.remove('bg-gray-200', 'text-gray-700');
+                salesBtn.classList.add('bg-gray-200', 'text-gray-700');
+                salesBtn.classList.remove('bg-[#0B3D91]', 'text-white');
+            }
+
+            salesBtn.addEventListener('click', renderSalesTable);
+            rentalBtn.addEventListener('click', renderRentalTable);
+
+            // Initial render
+            renderSalesTable();
+
+            // Chart.js implementation
+            const ctx = document.getElementById('costChart').getContext('2d');
+            const costChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Standard Wooden Pallet', 'Standard Plastic Pallet'],
+                    datasets: [{
+                        label: 'Average Low Cost (Used)',
+                        data: [80, 140],
+                        backgroundColor: 'rgba(11, 61, 145, 0.6)', // Deep blue with opacity
+                        borderColor: 'rgba(11, 61, 145, 1)',
+                        borderWidth: 1
+                    }, {
+                        label: 'Average High Cost (New)',
+                        data: [250, 1800],
+                        backgroundColor: 'rgba(143, 147, 147, 0.6)', // Gray with opacity
+                        borderColor: 'rgba(143, 147, 147, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Illustrative Cost Comparison: Purchase Price (ZAR)',
+                            font: { size: 16 }
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.parsed.y !== null) {
+                                        label += new Intl.NumberFormat('en-ZA', { style: 'currency', currency: 'ZAR' }).format(context.parsed.y);
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                    return 'R ' + value;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Gemini API Integration - Pallet Recommendation Tool
+            const getRecommendationBtn = document.getElementById('getRecommendationBtn');
+            const shippingGoodsInput = document.getElementById('shipping_goods');
+            const approxWeightInput = document.getElementById('approx_weight');
+            const shippingDestRadios = document.querySelectorAll('input[name="shipping_dest"]');
+            const specialRequirementsInput = document.getElementById('special_requirements');
+            const recommendationOutput = document.getElementById('recommendationOutput');
+            const recommendationText = document.getElementById('recommendationText');
+            const recommendationLoading = document.getElementById('recommendationLoading');
+
+            getRecommendationBtn.addEventListener('click', async () => {
+                const shippingGoods = shippingGoodsInput.value;
+                const approxWeight = approxWeightInput.value;
+                let shippingDest = '';
+                shippingDestRadios.forEach(radio => {
+                    if (radio.checked) {
+                        shippingDest = radio.value;
+                    }
+                });
+                const specialRequirements = specialRequirementsInput.value;
+
+                if (!shippingGoods || !approxWeight || !shippingDest) {
+                    recommendationOutput.classList.remove('hidden');
+                    recommendationText.innerHTML = '<p class="text-red-600">Please fill in all required fields (What are you shipping?, Approximate weight, and Shipping Destination).</p>';
+                    return;
+                }
+
+                recommendationOutput.classList.remove('hidden');
+                recommendationText.innerHTML = '';
+                recommendationLoading.classList.remove('hidden');
+
+                const prompt = `Act as an expert pallet solutions provider from E2Z Pallets. Based on the following client needs, recommend the most suitable pallet type(s) from our offerings (New Wooden, Used Wooden, New Plastic, Used Plastic, Export (ISPM 15), Hybrid). Provide a brief justification for your recommendation, focusing on benefits for the client.
+                Client Needs:
+                - Goods to ship: ${shippingGoods}
+                - Approximate weight per pallet: ${approxWeight} kg
+                - Shipping destination: ${shippingDest}
+                - Special requirements: ${specialRequirements || 'None'}
+
+                Our Pallet Types and typical characteristics:
+                - New Wooden Pallets: General use, local, good for standard loads.
+                - Used Wooden Pallets: Cost-effective, local, suitable for general loads, sustainability.
+                - New Plastic Pallets: Hygiene, automation, high durability, local/international, various load capacities (static/dynamic).
+                - Used Plastic Pallets: Economical plastic option, hygiene, reusability, local/international.
+                - Export (ISPM 15) Pallets: Specifically for international shipping, heat-treated.
+                - Hybrid Pallets: Primarily for rental, good balance of durability and cost, often for pooling systems.
+
+                Please provide a recommendation in a concise paragraph.`;
+
+                try {
+                    let chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = "";
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+                    
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    const result = await response.json();
+
+                    recommendationLoading.classList.add('hidden');
+
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        const text = result.candidates[0].content.parts[0].text;
+                        recommendationText.innerHTML = text;
+                    } else {
+                        recommendationText.innerHTML = '<p class="text-red-600">Sorry, I could not generate a recommendation at this time. Please try again.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error calling Gemini API:', error);
+                    recommendationLoading.classList.add('hidden');
+                    recommendationText.innerHTML = '<p class="text-red-600">An error occurred while fetching the recommendation. Please try again later.</p>';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
